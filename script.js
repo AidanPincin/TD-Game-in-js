@@ -240,7 +240,7 @@ window.addEventListener("click", function (e) {
             wave += 1
             if (wave == 1){
                 let a=1
-                while (a<=25){
+                while (a<=26){
                     monsters.push(new basic_monster(a*120))
                     a+=1
                 }
