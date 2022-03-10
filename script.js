@@ -6,6 +6,7 @@ var towers = []
 var placing_tower = false
 var defend = false
 var bought_basic = false
+var gold = 100
 var bought_fast = false
 var bought_sniper = false
 const canvas = document.querySelector('canvas')
@@ -109,6 +110,29 @@ class basic_monster extends Monster{
         this.color = '#000000'
         this.hp = 5
         this.max_hp = 5
+        this.gold_drop = 1
+    }
+}
+class tough_monster extends Monster{
+    constructor(delay){
+        super(delay)
+        this.damage = 2
+        this.speed = 2.5
+        this.color = '#30632e'
+        this.hp = 20
+        this.max_hp = 20
+        this.gold_drop = 2
+    }
+}
+class boss1 extends Monster{
+    constructor(delay){
+        super(delay)
+        this.damage = 20
+        this.speed = 2
+        this.color = '#ff0000'
+        this.hp = 500
+        this.max_hp = 500
+        this.gold_drop = 20
     }
 }
 class shop_item{
@@ -176,7 +200,7 @@ class Bullet{
             return false
         }
         catch(error) {
-            console.error(error)
+            console.log('error')
         }
     }
 }
@@ -210,8 +234,8 @@ class Tower{
             var y_dist = (dist_y/dist)*30
             ctx.fillStyle = '#000000'
             ctx.beginPath()
-            ctx.moveTo(this.x+25,this.y+25-50/15)
-            ctx.lineTo(this.x+25+x_dist,this.y+25+y_dist-50/15)
+            ctx.moveTo(this.x+25,this.y+25)
+            ctx.lineTo(this.x+25+x_dist,this.y+25+y_dist)
             ctx.lineWidth = 50/7.5
             ctx.stroke()
         }
@@ -312,6 +336,10 @@ function update(){
     ctx.fillRect(255,5,100,40)
     ctx.fillRect(380,5,100,40)
     ctx.fillRect(505,5,100,40)
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(1570, 10, 250, 30)
+    ctx.fillStyle = '#ff0000'
+    ctx.fillRect(1570, 10, (base_hp/100)*250, 30)
     ctx.font = "20px Arial"
     ctx.fillStyle = '#c8c8c8'
     ctx.fillText("Next Wave", 6,30)
@@ -320,15 +348,19 @@ function update(){
     ctx.fillText("Settings", 517.5,30)
     ctx.font = "17px Arial"
     ctx.fillText("Monster Info", 256,30)
+    ctx.fillStyle = '#ffffff'
+    ctx.fillText("HP -- "+base_hp+"/100",1460,30)
+    ctx.fillText("Gold -- "+gold,1270,30)
+    ctx.fillText("Wave -- "+wave,1070,30)
     length = towers.length
     for (let i=0; i<length; i++){
         towers[i].blit()
-        if (monsters.length == 0){
-            defend = false
-        }
         if (defend==true){
             towers[i].shoot()
         }
+    }
+    if (monsters.length == 0){
+        defend = false
     }
 }
 update()
@@ -350,6 +382,7 @@ function draw(){
     for (let i=0; i<length; i++){
         monsters[i].move()
         if (monsters[i].hp <= 0){
+            gold += monsters[i].gold_drop
             monsters.splice(i,1)
             length = monsters.length
         }
@@ -453,22 +486,40 @@ window.addEventListener("click", function (e) {
             in_shop = false
         }
         if (130<e.pageX && e.pageX<190 && 297.5<e.pageY && e.pageY<327.5){
-            placing_tower = true
-            in_shop = false
-            bought_basic = true
-            update()
+            if (gold>=25){
+                placing_tower = true
+                in_shop = false
+                bought_basic = true
+                update()
+                gold -= 25
+            }
+            else{
+                this.alert("Not enought gold! You have "+gold+" gold!")
+            }
         }
         if (430<e.pageX && e.pageX<490 && 297.5<e.pageY && e.pageY<327.5){
-            placing_tower = true
-            in_shop = false
-            bought_fast = true
-            update()
+            if (gold>=50){
+                placing_tower = true
+                in_shop = false
+                bought_fast = true
+                update()
+                gold -= 50
+            }
+            else{
+                this.alert("Not enought gold! You have "+gold+" gold!")
+            }
         }
         if (730<e.pageX && e.pageX<790 && 297.5<e.pageY && e.pageY<327.5){
-            placing_tower = true
-            in_shop = false
-            bought_sniper = true
-            update()
+            if (gold>=100){
+                placing_tower = true
+                in_shop = false
+                bought_sniper = true
+                update()
+                gold -= 100
+            }
+            else{
+                this.alert("Not enought gold! You have "+gold+" gold!")
+            }
         }
     }
     else{
@@ -498,6 +549,153 @@ window.addEventListener("click", function (e) {
                     monsters.push(new basic_monster(a*60))
                     a+=1
                 }
+                defend = true
+                draw()
+            }
+            if (wave == 4){
+                let a=1
+                while (a<=50){
+                    monsters.push(new basic_monster(a*60))
+                    if (a<=25){
+                        monsters.push(new tough_monster(a*120))
+                    }
+                    a+=1
+                }
+                defend = true
+                draw()
+            }
+            if (wave == 5){
+                monsters.push(new boss1(60))
+                defend = true
+                draw()
+            }
+        }
+        if (e.pageX<240 && 140<e.pageX && 15<e.pageY && e.pageY<55){
+            in_shop = true
+            shop()
+        }
+
+        if (e.pageX<365 && 265<e.pageX && 15<e.pageY && e.pageY<55){
+            this.alert("Coming Soon!")
+        }
+
+        if (e.pageX<490 && 390<e.pageX && 15<e.pageY && e.pageY<55){
+            this.alert("Coming Soon!")
+        }
+
+        if (e.pageX<615 && 515<e.pageX && 15<e.pageY && e.pageY<55){
+            this.alert("Coming Soon!")
+        }
+    }
+})
+window.addEventListener('touchend', function (e){
+    if (placing_tower == true){
+        place(10, 140, 34, 3,e)
+        place(50.6*35+10,140,3,3,e)
+        place(50.6*35+10,540,3,3,e)
+        place(50.6*35+10,940,3,3,e)
+        place(10,540,34,3,e)
+        place(10,940,34,3,e)
+        place(210,340,34,3,e)
+        place(210,740,34,3,e)
+        place(10,340,3,3,e)
+        place(10,740,3,3,e)
+        place(50.6*35+10,90,3,1,e)
+        place(50.6*35+10,290,3,1,e)
+        place(50.6*35+10,490,3,1,e)
+        place(50.6*35+10,690,3,1,e)
+        place(50.6*35+10,890,3,1,e)
+        place(10,290,3,1,e)
+        place(10,490,3,1,e)
+        place(10,690,3,1,e)
+        place(10,890,3,1,e)
+    }
+    else if (in_shop == true){
+        if (e.pageX<1020 && 920<e.pageX && e.pageY<1050 && 1010<e.pageY){
+            update()
+            in_shop = false
+        }
+        if (130<e.pageX && e.pageX<190 && 297.5<e.pageY && e.pageY<327.5){
+            if (gold>=25){
+                placing_tower = true
+                in_shop = false
+                bought_basic = true
+                update()
+                gold -= 25
+            }
+            else{
+                this.alert("Not enought gold! You have "+gold+" gold!")
+            }
+        }
+        if (430<e.pageX && e.pageX<490 && 297.5<e.pageY && e.pageY<327.5){
+            if (gold>=50){
+                placing_tower = true
+                in_shop = false
+                bought_fast = true
+                update()
+                gold -= 50
+            }
+            else{
+                this.alert("Not enought gold! You have "+gold+" gold!")
+            }
+        }
+        if (730<e.pageX && e.pageX<790 && 297.5<e.pageY && e.pageY<327.5){
+            if (gold>=100){
+                placing_tower = true
+                in_shop = false
+                bought_sniper = true
+                update()
+                gold -= 100
+            }
+            else{
+                this.alert("Not enought gold! You have "+gold+" gold!")
+            }
+        }
+    }
+    else{
+        if (e.pageX<115 && 15<e.pageX && 15<e.pageY && e.pageY<55 && defend == false){
+            wave += 1
+            if (wave == 1){
+                let a=1
+                while (a<=25){
+                    monsters.push(new basic_monster(a*120))
+                    a+=1
+                }
+                defend = true
+                draw()
+            }
+            if (wave == 2){
+                let a=1
+                while (a<=50){
+                    monsters.push(new basic_monster(a*90))
+                    a+=1
+                }
+                defend = true
+                draw()
+            }
+            if (wave == 3){
+                let a=1
+                while (a<=75){
+                    monsters.push(new basic_monster(a*60))
+                    a+=1
+                }
+                defend = true
+                draw()
+            }
+            if (wave == 4){
+                let a=1
+                while (a<=50){
+                    monsters.push(new basic_monster(a*60))
+                    if (a<=25){
+                        monsters.push(new tough_monster(a*120))
+                    }
+                    a+=1
+                }
+                defend = true
+                draw()
+            }
+            if (wave == 5){
+                monsters.push(new boss1(60))
                 defend = true
                 draw()
             }
