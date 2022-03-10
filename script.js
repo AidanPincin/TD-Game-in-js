@@ -440,12 +440,62 @@ function place(x, y, rows, cols, e){
         }
     }
 }
+class check_if_tower_clicked{
+    clicked = false
+    cords = [0,0]
+    constructor(x,y,rows,cols){
+        this.x = x
+        this.y = y
+        this.rows = rows
+        this.cols = cols
+    }
+
+    if_click(e){
+        for (let i=0; i<this.rows; i++){
+            for (let g=0; g<this.cols; g++){
+                if (this.x+i*50.6<e.pageX && e.pageX<this.x+50+i*50.6 && this.y+g*50<e.pageY && e.pageY<this.y+50+g*50){
+                    if (check(tower_cords, [this.x-10+i*50.6,this.y-10+g*50])){
+                        check_if_tower_clicked.clicked = true
+                        check_if_tower_clicked.cords = [this.x-10+i*50.6,this.y-10+g*50]
+                    }
+                }
+            }
+        }
+    }
+}
+class upgrades{
+    constructor(){
+
+    }
+}
+t1 = new check_if_tower_clicked(10, 140, 34, 3)
+t2 = new check_if_tower_clicked(50.6*35+10,140,3,3)
+t3 = new check_if_tower_clicked(50.6*35+10,540,3,3)
+t4 = new check_if_tower_clicked(50.6*35+10,940,3,3)
+t5 = new check_if_tower_clicked(10,540,34,3)
+t6 = new check_if_tower_clicked(10,940,34,3)
+t7 = new check_if_tower_clicked(210,340,34,3)
+t8 = new check_if_tower_clicked(210,740,34,3)
+t9 = new check_if_tower_clicked(10,340,3,3)
+t10 = new check_if_tower_clicked(10,740,3,3)
+t11 = new check_if_tower_clicked(50.6*35+10,90,3,1)
+t12 = new check_if_tower_clicked(50.6*35+10,290,3,1)
+t13 = new check_if_tower_clicked(50.6*35+10,490,3,1)
+t14 = new check_if_tower_clicked(50.6*35+10,690,3,1)
+t15 = new check_if_tower_clicked(50.6*35+10,890,3,1)
+t16 = new check_if_tower_clicked(10,290,3,1)
+t17 = new check_if_tower_clicked(10,490,3,1)
+t18 = new check_if_tower_clicked(10,690,3,1)
+t19 = new check_if_tower_clicked(10,890,3,1)
 function light_up(x, y, rows, cols, e){
     for (let i=0; i<rows; i++){
         for (let g=0; g<cols; g++){
             if (x+i*50.6<e.pageX && e.pageX<x+50+i*50.6 && y+g*50<e.pageY && e.pageY<y+50+g*50){
-                ctx.fillStyle = '#00ff00'
-                ctx.fillRect(x-10+i*50.6, y-10+g*50, 50.6, 50)
+                if (check(tower_cords, [x-10+i*50.6,y-10+g*50])){}
+                else{
+                    ctx.fillStyle = '#00ff00'
+                    ctx.fillRect(x-10+i*50.6, y-10+g*50, 50.6, 50)
+                }
             }
         }
     }
@@ -602,6 +652,30 @@ window.addEventListener("click", function (e) {
 
         if (e.pageX<615 && 515<e.pageX && 15<e.pageY && e.pageY<55){
             this.alert("Coming Soon!")
+        }
+        t1.if_click(e)
+        t2.if_click(e)
+        t3.if_click(e)
+        t4.if_click(e)
+        t5.if_click(e)
+        t6.if_click(e)
+        t7.if_click(e)
+        t8.if_click(e)
+        t9.if_click(e)
+        t10.if_click(e)
+        t11.if_click(e)
+        t12.if_click(e)
+        t13.if_click(e)
+        t14.if_click(e)
+        t15.if_click(e)
+        t16.if_click(e)
+        t17.if_click(e)
+        t18.if_click(e)
+        t19.if_click(e)
+        if (check_if_tower_clicked.clicked == true){
+            this.alert('Upgrades coming soon!')
+            check_if_tower_clicked.clicked = false
+
         }
     }
 })
