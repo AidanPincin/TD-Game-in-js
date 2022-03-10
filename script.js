@@ -673,7 +673,7 @@ window.addEventListener("click", function (e) {
         t18.if_click(e)
         t19.if_click(e)
         if (check_if_tower_clicked.clicked == true){
-            this.alert('Upgrades coming soon!')
+            this.alert('Tower upgrades coming soon!')
             check_if_tower_clicked.clicked = false
 
         }
