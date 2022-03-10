@@ -516,7 +516,7 @@ window.addEventListener("click", function (e) {
         }
 
         if (e.pageX<615 && 515<e.pageX && 15<e.pageY && e.pageY<55){
-            this.alert("Coming soon!")
+            this.alert("Coming Soon!")
         }
     }
 })
