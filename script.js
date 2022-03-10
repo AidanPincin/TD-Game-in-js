@@ -3,6 +3,7 @@ var base_hp = 100
 var in_shop = false
 var monsters = []
 var towers = []
+var tower_cords = []
 var placing_tower = false
 var defend = false
 var bought_basic = false
@@ -365,6 +366,15 @@ function update(){
 }
 update()
 
+function check(arr, item){
+    var string_item = JSON.stringify(item)
+
+    var contains = arr.some(function(ele){
+        return JSON.stringify(ele) === string_item
+    })
+    return contains
+}
+
 function shop(){
     ctx.fillStyle = '#007d00'
     ctx.fillRect(0,0,1920,1080)
@@ -402,23 +412,29 @@ function place(x, y, rows, cols, e){
     for (let i=0; i<rows; i++){
         for (let g=0; g<cols; g++){
             if (x+i*50.6<e.pageX && e.pageX<x+50+i*50.6 && y+g*50<e.pageY && e.pageY<y+50+g*50){
-                if (bought_basic == true){
-                    towers.push(new basic_tower(x-10+i*50.6, y-10+g*50))
-                    placing_tower = false
-                    update()
-                    bought_basic = false
+                if (check(tower_cords, [x-10+i*50.6,y-10+g*50])){
+                    alert("Can't place that here!")
                 }
-                if (bought_fast == true){
-                    towers.push(new fast_tower(x-10+i*50.6, y-10+g*50))
-                    placing_tower = false
-                    update()
-                    bought_fast = false
-                }
-                if (bought_sniper == true){
-                    towers.push(new sniper_tower(x-10+i*50.6, y-10+g*50))
-                    placing_tower = false
-                    update()
-                    bought_sniper = false
+                else{
+                    if (bought_basic == true){
+                        towers.push(new basic_tower(x-10+i*50.6, y-10+g*50))
+                        placing_tower = false
+                        update()
+                        bought_basic = false
+                    }
+                    if (bought_fast == true){
+                        towers.push(new fast_tower(x-10+i*50.6, y-10+g*50))
+                        placing_tower = false
+                        update()
+                        bought_fast = false
+                    }
+                    if (bought_sniper == true){
+                        towers.push(new sniper_tower(x-10+i*50.6, y-10+g*50))
+                        placing_tower = false
+                        update()
+                        bought_sniper = false
+                    }
+                    tower_cords.push([x-10+i*50.6,y-10+g*50])
                 }
             }
         }
@@ -525,6 +541,7 @@ window.addEventListener("click", function (e) {
     else{
         if (e.pageX<115 && 15<e.pageX && 15<e.pageY && e.pageY<55 && defend == false){
             wave += 1
+            update()
             if (wave == 1){
                 let a=1
                 while (a<=25){
