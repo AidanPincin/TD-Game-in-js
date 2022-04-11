@@ -193,7 +193,7 @@ class Tower{
         if (this.showUpgrades == true){
             drawRect('#c9c9c9',this.x-125,this.y-200,300,200)
             const txt = [new Txt(this.x+25,this.y-190,this.name,'#000000',24),new Txt(this.x-125,this.y-160,'Damage -- '+this.dmg,'#000000',20,false),
-            new Txt(this.x-125,this.y-130,'Fire Rate -- '+this.fireRate+'/s','#000000',20,false),new Txt(this.x-125,this.y-100,'Range -- '+this.range,'#000000',20,false),
+            new Txt(this.x-125,this.y-130,'Fire Rate -- '+this.fireRate+'/s','#000000',19,false),new Txt(this.x-125,this.y-100,'Range -- '+this.range,'#000000',20,false),
             new Txt(this.x-125,this.y-70,'Bullet Speed -- '+this.bulletSpeed.toFixed(1),'#000000',17,false)]
             const buttons = [new Button(this.x+25,this.y-40,'Sell for '+this.cost.toFixed(0)+' gold',undefined,undefined,true,18,25),
             new Button(this.x+25,this.y-170,'Upgrade for '+this.cost1.toFixed(0)+' gold',undefined,undefined,false,14,20),new Button(this.x+25,this.y-140,'Upgrade for '+this.cost2.toFixed(0)+' gold',undefined,undefined,false,14,20),
@@ -319,6 +319,7 @@ class ShopTower{
         for (let i=0; i<this.txt.length; i++){this.txt[i].draw()}
     }
 }
+let speed = 1
 class CanvasRenderer{
     constructor(){
         this.wave = 0
@@ -335,7 +336,10 @@ class CanvasRenderer{
             }
         }),
         new Button(a,5,'Shop',undefined,1),new Button(a,5,'Monster Info',undefined,2),
-        new Button(a,5,'Research',undefined,3),new Button(a,5,'Stats',undefined,4)]
+        new Button(a,5,'Research',undefined,3),new Button(a,5,'Stats',undefined,4),new Button(a,5,'Speed up',function(){
+            if (speed < 3){speed += 1}
+            else{speed = 1}
+        })]
         this.backButton = [new Button(712.5,750,'Back',undefined,0,true)]
         this.shopTowers = [new ShopTower(10,1,250,25,'#ff0000','Basic Boi',100,100,7.5),new ShopTower(5,5,200,50,'#ffff00','Fast Boi',400,100,5),
         new ShopTower(50,0.5,1000,100,'#0000ff','Sniper Boi',700,100,10)]
@@ -385,9 +389,10 @@ class CanvasRenderer{
         drawRect('#ffffff',1225,10,200,30)
         drawRect('#ff0000',1225,10,(this.base.hp/100)*200,30)
         new Txt(1175,25,this.base.hp+'/100').draw()
-        new Txt(1000,25,'Gold -- '+this.gold).draw()
-        new Txt(850,25,'XP -- '+Math.floor(this.xp)).draw()
-        new Txt(700,25,'Wave -- '+this.wave).draw()
+        new Txt(1050,25,'Gold -- '+this.gold,'#000000',18).draw()
+        new Txt(950,25,'XP -- '+Math.floor(this.xp),'#000000',18).draw()
+        new Txt(850,25,'Wave -- '+this.wave,'#000000',18).draw()
+        new Txt(750,25,'Speed -- x'+speed,'#000000',18).draw()
     }
     drawShop(){
         for (let i=0; i<this.shopButtons.length; i++){this.shopButtons[i].draw()}
@@ -475,7 +480,7 @@ class CanvasRenderer{
 }
 const renderer = new CanvasRenderer()
 function mainLoop(){
-    renderer.draw()
+    for (let i=0; i<speed; i++){renderer.draw()}
     requestAnimationFrame(mainLoop)
 }
 mainLoop()
