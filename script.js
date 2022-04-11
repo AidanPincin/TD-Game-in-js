@@ -130,7 +130,33 @@ class TougherBoi extends Monster{
         this.xp = 0.2
         this.gold = 2
         this.armor = 5
-        this.color = '#00c900'
+        this.color = '#005c00'
+    }
+}
+class SpeedyBoi extends Monster{
+    constructor(delay){
+        super(delay)
+        this.dmg = 3
+        this.max_hp = 75
+        this.speed = 5
+        this.hp = 75
+        this.armor = 0
+        this.gold = 3
+        this.xp = 0.3
+        this.color = '#ffff00'
+    }
+}
+class SlowBoi extends Monster{
+    constructor(delay){
+        super(delay)
+        this.dmg = 5
+        this.max_hp = 1000
+        this.hp = 1000
+        this.speed = 1.5
+        this.gold = 5
+        this.xp = 0.5
+        this.color = '#910000'
+        this.armor = 10
     }
 }
 class Button{
@@ -156,6 +182,22 @@ class Button{
         if (x>=this.x && x<=this.x+this.width && y>=this.y && y<=this.y+this.height){
             if (this.fn != undefined){this.fn()}
             else if (this.pageNum != undefined){renderer.pageNum=this.pageNum}
+        }
+    }
+}
+class MonsterInfo{
+    constructor(x,y,dmg,hp,armor,speed,color,wave,name){
+        this.x = x
+        this.y = y
+        this.color = color
+        this.wave = wave
+        this.txt = [new Txt(x+50,y-30,name,'#000000',36),new Txt(x+50,y+115,'HP -- '+hp), new Txt(x+50,y+145,'Armor -- '+armor), 
+        new Txt(x+50,y+175,'Speed -- '+speed), new Txt(x+50,y+205,'Damage -- '+dmg)]
+    }
+    draw(){
+        if (renderer.wave>=this.wave){
+            drawRect(this.color,this.x,this.y,100,100)
+            for (let i=0; i<this.txt.length; i++){this.txt[i].draw()}
         }
     }
 }
@@ -205,6 +247,9 @@ class Tower{
             if (hit==true){this.bullets.splice(i,1)}
         }
         if (this.showUpgrades == true){
+            let x = this.x
+            let y = this.y
+            if (this.x<150){}
             drawRect('#c9c9c9',this.x-125,this.y-200,300,200)
             const txt = [new Txt(this.x+25,this.y-190,this.name,'#000000',24),new Txt(this.x-125,this.y-160,'Damage -- '+this.dmg,'#000000',20,false),
             new Txt(this.x-125,this.y-130,'Fire Rate -- '+this.fireRate+'/s','#000000',19,false),new Txt(this.x-125,this.y-100,'Range -- '+this.range,'#000000',20,false),
@@ -263,7 +308,7 @@ class Tower{
             },undefined,false,14,20), 
             new Button(this.x+25,this.y-80,'Upgrade for '+this.cost4.toFixed(0)+' gold',function(){
                 if (renderer.gold>=Math.floor(tower.cost4)){
-                    tower.bulletSpeed+=tower.bulletSpeed1/4
+                    tower.bulletSpeed+=tower.bulletSpeed1/2
                     tower.cost+=tower.cost4*0.75
                     renderer.gold-=tower.cost4.toFixed(0)
                     tower.cost4=Math.pow(tower.cost4,1.05)+2
@@ -339,7 +384,9 @@ let speed = 1
 class CanvasRenderer{
     constructor(){
         this.wave = 0
-        setTimeout(() => {renderer.waves = [[[BasicBoi,25,360,0]],[[BasicBoi,25,240,0]],[[BasicBoi,25,120,0]],[[BasicBoi,25,60,0]],[[BasicBoi,15,120,0],[TougherBoi,5,480,10*120]]]},0)
+        setTimeout(() => {renderer.waves = [[[BasicBoi,25,360,0]],[[BasicBoi,25,240,0]],[[BasicBoi,25,120,0]],[[BasicBoi,25,60,0]],[[BasicBoi,15,60,0],[TougherBoi,5,480,600]], //5
+        [[BasicBoi,5,60,0],[TougherBoi,10,360,300]],[[BasicBoi,25,60,0],[TougherBoi,25,360,1200]],[[TougherBoi,25,240,0]],[[BasicBoi,50,60,0],[TougherBoi,50,120,2750]], //9
+        [[SlowBoi,1,0,0]]]},0) //10
         this.base = new Base(1050,300)
         this.towerInfo = undefined
         this.pathCoords = [[1300,700,50,1000000],[100,650,1250,50],[100,150,50,500],[150,150,1200,50],[1300,200,50,350],[250,500,1050,50],[250,300,50,200],[300,300,750,50],[this.base.x,this.base.y,100,50]]
@@ -355,7 +402,7 @@ class CanvasRenderer{
         }),
         new Button(a,5,'Shop',undefined,1),new Button(a,5,'Monster Info',undefined,2),
         new Button(a,5,'Research',undefined,3),new Button(a,5,'Stats',undefined,4),new Button(a,5,'Speed up',function(){
-            if (speed < 3){speed += 1}
+            if (speed < 10){speed += 1}
             else{speed = 1}
         })]
         this.backButton = [new Button(712.5,750,'Back',undefined,0,true)]
@@ -418,13 +465,19 @@ class CanvasRenderer{
         new Txt(1250,25,'Gold -- '+this.gold).draw()
     }
     drawMonsterInfo(){
+        if (this.wave == 0){new Txt(725,30,'You have not discovered any monsters yet!','#ff0000',48).draw()}
+        new MonsterInfo(100,100,1,30,0,3,'#000000',1,'Weak Boi').draw()
+        new MonsterInfo(400,100,2,120,5,2.5,'#005c00',5,'Tougher Boi').draw()
+        new MonsterInfo(700,100,3,1000,10,1.5,'#910000',10,'Slow Boi').draw()
         this.backButton[0].draw()
     }
     drawResearch(){
+        new Txt(725,50,'Coming Soon!','#000000',36).draw()
         for (let i=0; i<this.researchButtons.length; i++){this.researchButtons[i].draw()}
     }
     drawStats(){
         this.backButton[0].draw()
+        new Txt(725,50,'Coming Soon!','#000000',36).draw()
     }
     placeTower(){
         drawRect('#7d7d7d',0,0,1450,50)
