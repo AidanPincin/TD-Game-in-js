@@ -117,6 +117,20 @@ class BasicBoi extends Monster{
         this.gold = 1
         this.xp = 0.1
         this.color = '#000000'
+        this.armor = 0
+    }
+}
+class TougherBoi extends Monster{
+    constructor(delay){
+        super(delay)
+        this.dmg = 2
+        this.max_hp = 120
+        this.speed = 2.5
+        this.hp = 120
+        this.xp = 0.2
+        this.gold = 2
+        this.armor = 5
+        this.color = '#00c900'
     }
 }
 class Button{
@@ -188,7 +202,7 @@ class Tower{
         }
         for (let i=0; i<this.bullets.length; i++){
             const hit = this.bullets[i].draw()
-            if (hit==true){this.bullets.splice(this.bullets.indexOf(hit),1)}
+            if (hit==true){this.bullets.splice(i,1)}
         }
         if (this.showUpgrades == true){
             drawRect('#c9c9c9',this.x-125,this.y-200,300,200)
@@ -286,7 +300,9 @@ class Bullet{
         const s = Math.sqrt(Math.pow(this.x_speed,2)+Math.pow(this.y_speed,2))
         const hitMonster = renderer.monsters.find(monster => monster.x<=this.x+10+s && monster.x+40+s>=this.x && monster.y<=this.y+10+s && monster.y+40+s>=this.y)
         if (hitMonster != undefined){
-            hitMonster.hp -= this.dmg
+            let dmg = this.dmg-hitMonster.armor
+            if(dmg<0){dmg=0}
+            hitMonster.hp -= dmg
             if(hitMonster.hp<=0){renderer.gold+=hitMonster.gold;renderer.xp+=hitMonster.xp;renderer.monsters.splice(renderer.monsters.indexOf(hitMonster),1)}
             return true
         }
@@ -323,14 +339,16 @@ let speed = 1
 class CanvasRenderer{
     constructor(){
         this.wave = 0
-        setTimeout(() => {this.waves = [[BasicBoi,25,360],[BasicBoi,25,240],[BasicBoi,25,120],[BasicBoi,25,60]]},0)
+        setTimeout(() => {renderer.waves = [[[BasicBoi,25,360,0]],[[BasicBoi,25,240,0]],[[BasicBoi,25,120,0]],[[BasicBoi,25,60,0]],[[BasicBoi,15,120,0],[TougherBoi,5,480,10*120]]]},0)
         this.base = new Base(1050,300)
         this.towerInfo = undefined
         this.pathCoords = [[1300,700,50,1000000],[100,650,1250,50],[100,150,50,500],[150,150,1200,50],[1300,200,50,350],[250,500,1050,50],[250,300,50,200],[300,300,750,50],[this.base.x,this.base.y,100,50]]
         this.mainButtons = [new Button(5,5,'Next Wave',function(){
             if (renderer.monsters.length==0){
-                for(let i=0;i<renderer.waves[renderer.wave][1];i++){
-                    renderer.monsters.push(new renderer.waves[renderer.wave][0](i*renderer.waves[renderer.wave][2]))
+                for(let i=0;i<renderer.waves[renderer.wave].length;i++){
+                    for (let g=0;g<renderer.waves[renderer.wave][i][1];g++){
+                        renderer.monsters.push(new renderer.waves[renderer.wave][i][0](g*renderer.waves[renderer.wave][i][2]+renderer.waves[renderer.wave][i][3]))
+                    }
                 }
                 renderer.wave += 1
             }
@@ -355,7 +373,7 @@ class CanvasRenderer{
         this.towers = []
         this.monstersSlain = 0
         this.dmgDone = 0
-        this.goldEarned = 45
+        this.goldEarned = 100
         this.goldSpent = 0
         this.goldSpentOnTowers = 0
         this.goldSpentOnUpgrades = 0
@@ -365,7 +383,7 @@ class CanvasRenderer{
         this.hitsTaken = 0
         this.bulletsFired = 0
         this.monsters = []
-        this.gold = 45
+        this.gold = 100
         this.xp = 0
         this.xpEarned = 0
         this.xpSpent = 0
