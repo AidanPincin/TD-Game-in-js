@@ -60,7 +60,7 @@ class Monster{
                 this.path = i
                 if (w==50){
                     if(this.y<y+h && this.y>y+5){this.y-=this.speed}
-                    else if(this.y<y+5){this.y+=this.speed}
+                    else if(this.y<y+5-this.speed){this.y+=this.speed}
                 }
                 if (h==50){
                     if(this.x<x+w && this.x>x+5){this.x-=this.speed}
@@ -75,13 +75,13 @@ class Monster{
                 if(this.x<x+w*2 && this.x>x+5){this.x-=this.speed}
                 else if(this.x<x+5){this.x+=this.speed}
                 else{this.moving = true}
-                if (this.x<x+5+this.speed && this.x>x+5-this.speed){this.x = x+5}
+                if (this.x<x+5+this.speed*2 && this.x>x+5-this.speed*2){this.x = x+5}
             }
             if (h==50){
                 if(this.y<y+h*2 && this.y>y+5){this.y-=this.speed}
                 else if(this.y<y+5){this.y+=this.speed}
                 else{this.moving = true}
-                if (this.y<y+5+this.speed && this.y>y+5-this.speed){this.y = y+5}
+                if (this.y<y+5+this.speed*2 && this.y>y+5-this.speed*2){this.y = y+5}
             }
         }
         if (X == this.x && Y == this.y){
@@ -91,13 +91,13 @@ class Monster{
                 if(this.x<x+w*2 && this.x>x+5){this.x-=this.speed}
                 else if(this.x<x+5){this.x+=this.speed}
                 else{this.moving = true}
-                if (this.x<x+5+this.speed && this.x>x+5-this.speed){this.x = x+5}
+                if (this.x<x+5+this.speed*2 && this.x>x+5-this.speed*2){this.x = x+5}
             }
             if (w==50){
                 if(this.y<y+h*2 && this.y>y+5){this.y-=this.speed}
                 else if(this.y<y+5){this.y+=this.speed}
                 else{this.moving = true}
-                if (this.y<y+5+this.speed && this.y>y+5-this.speed){this.y = y+5}
+                if (this.y<y+5+this.speed*2 && this.y>y+5-this.speed*2){this.y = y+5}
             }
         }
         if (this.x>renderer.base.x && this.y<renderer.base.y+100 && this.x<renderer.base.x+100 && this.y>renderer.base.y){
@@ -128,7 +128,7 @@ class TougherBoi extends Monster{
         this.speed = 2.5
         this.hp = 120
         this.xp = 0.2
-        this.gold = 2
+        this.gold = 3
         this.armor = 5
         this.color = '#005c00'
     }
@@ -137,11 +137,11 @@ class SpeedyBoi extends Monster{
     constructor(delay){
         super(delay)
         this.dmg = 3
-        this.max_hp = 75
+        this.max_hp = 240
         this.speed = 5
-        this.hp = 75
+        this.hp = 240
         this.armor = 0
-        this.gold = 3
+        this.gold = 5
         this.xp = 0.3
         this.color = '#ffff00'
     }
@@ -153,7 +153,7 @@ class SlowBoi extends Monster{
         this.max_hp = 1000
         this.hp = 1000
         this.speed = 1.5
-        this.gold = 5
+        this.gold = 10
         this.xp = 0.5
         this.color = '#910000'
         this.armor = 10
@@ -386,7 +386,8 @@ class CanvasRenderer{
         this.wave = 0
         setTimeout(() => {renderer.waves = [[[BasicBoi,25,360,0]],[[BasicBoi,25,240,0]],[[BasicBoi,25,120,0]],[[BasicBoi,25,60,0]],[[BasicBoi,15,60,0],[TougherBoi,5,480,600]], //5
         [[BasicBoi,5,60,0],[TougherBoi,10,360,300]],[[BasicBoi,25,60,0],[TougherBoi,25,360,1200]],[[TougherBoi,25,240,0]],[[BasicBoi,50,60,0],[TougherBoi,50,120,2750]], //9
-        [[SlowBoi,1,0,0]]]},0) //10
+        [[SlowBoi,1,0,0]],[[BasicBoi,25,60,0],[TougherBoi,25,60,1500],[SlowBoi,5,600,2000]],[[TougherBoi,25,60,0],[SlowBoi,5,480,2000]],[[TougherBoi,25,60,0],[SlowBoi,10,360,2000]],[[SlowBoi,25,240,0]], //14
+        [[SpeedyBoi,5,600,0]],[[SpeedyBoi,10,480,0],[SlowBoi,25,360,1500]],[[SpeedyBoi,25,360,0]],[[SpeedyBoi,50,240,0]],[[SpeedyBoi,50,240,0],[SlowBoi,50,240,1500]]]},0) //19
         this.base = new Base(1050,300)
         this.towerInfo = undefined
         this.pathCoords = [[1300,700,50,1000000],[100,650,1250,50],[100,150,50,500],[150,150,1200,50],[1300,200,50,350],[250,500,1050,50],[250,300,50,200],[300,300,750,50],[this.base.x,this.base.y,100,50]]
@@ -469,6 +470,7 @@ class CanvasRenderer{
         new MonsterInfo(100,100,1,30,0,3,'#000000',1,'Weak Boi').draw()
         new MonsterInfo(400,100,2,120,5,2.5,'#005c00',5,'Tougher Boi').draw()
         new MonsterInfo(700,100,3,1000,10,1.5,'#910000',10,'Slow Boi').draw()
+        new MonsterInfo(1000,100,3,240,0,5,'#ffff00',15,'Speedy Boi').draw()
         this.backButton[0].draw()
     }
     drawResearch(){
@@ -556,4 +558,5 @@ function mainLoop(){
 }
 mainLoop()
 window.addEventListener('click',function(e){renderer.clicked(e)})
+window.addEventListener('touchend',function(e){renderer.clicked(e)})
 window.addEventListener('mousemove',function(e){renderer.mouseX = e.pageX-35;renderer.mouseY = e.pageY-35})
